@@ -2,6 +2,7 @@
 // this is for error handling and avoid writing try catch every time
 import { asyncHandler } from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/apiError.js'
+import {User } from "../models/user.model.js"
 
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend (Postman)
@@ -21,13 +22,13 @@ const registerUser = asyncHandler(async (req, res) => {
     //     throw new ApiError(400,"fullname is required")
     // }
 
-    if(
-        [fullname,email,username,password].some((field)=>
-            field?.trim()===""
-        )
-    ){
-        throw new ApiError(400, "All fields are required")
-    }
+    // if(
+    //     [fullname,email,username,password].some((field)=>
+    //         field?.trim()===""
+    //     )
+    // ){
+    //     throw new ApiError(400, "All fields are required")
+    // }
 
 
 
@@ -35,3 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 export { registerUser }
+
+
+
+

@@ -16,7 +16,12 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())  // for cookie 
 
-
+// Add global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
+  
 // routes import 
 
 import userRouter from './routes/user.routes.js'
