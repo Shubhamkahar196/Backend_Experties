@@ -1,4 +1,4 @@
-**** Backend Expertis *****
+**** Backend Experties *****
 
 Backend Expertise Prerequisites
 
