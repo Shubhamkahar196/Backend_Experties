@@ -57,9 +57,24 @@ import userRouter from './routes/user.routes.js';
 // router declaration
 app.use("/api/v1/users", userRouter);
 
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ message: "Internal Server Error" });
+  console.error('Error details:', err);
+
+  // If it's an ApiError, send the specific error
+  if (err.statusCode) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      errors: err.errors || []
+    });
+  }
+
+  // For other errors, send generic message
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error"
+  });
 });
 
 export { app };
