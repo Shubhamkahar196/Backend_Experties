@@ -12,22 +12,23 @@ import { ApiResponse } from "../utils/apiResponse.js";
 //     extended: true
 //  }))
 
+const generateAccessAndRefereshToken = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-const generateAccessAndRefereshToken = async(userId)=>{
-  try{
-      const user = await User.findById(userId)
-     const accessToken =   user.generateAccessToken();
-     const refreshToken =  user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
 
-   user.refreshToken = refreshToken
-  await user.save({validateBeforeSave: false})
-
-  return {accessToken, refreshToken}
-        
-  }catch(e){
-    throw new ApiError(500, "Something went wrong while  generating referesh and access token")
+    return { accessToken, refreshToken };
+  } catch (e) {
+    throw new ApiError(
+      500,
+      "Something went wrong while  generating referesh and access token"
+    );
   }
-}
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   //  get user details from frontend (Postman)
@@ -132,36 +133,43 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
-   
-  const {accessToken,refreshToken} = await generateAccessAndRefereshToken(user._id)
-  
-   
-const loggedInUser = User.findById(existUser._id).select("-password -refreshToken")
 
-// cookies
+  const { accessToken, refreshToken } = await generateAccessAndRefereshToken(
+    user._id
+  );
 
-const options = {
-  httpOnly: true,
-  secure: true
-}
+  const loggedInUser = User.findById(existUser._id).select(
+    "-password -refreshToken"
+  );
 
-return res.status(200)
-.cookie("accessToken", accessToken,options)
-.cookie("refreshToken",refreshToken,options)
-.json(
-  new ApiResponse(
-    200, 
-    {
-      user: loggedInUser, accessToken,
-      refreshToken
-  },
-  "User logged in Successfully"
-)
+  // cookies
 
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
 
-)
-
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "User logged in Successfully"
+      )
+    );
 });
+
+
+const logoutUser = asyncHandler (async(req,res)=>{
+  
+})
 
 export { registerUser, loginUser };
 
